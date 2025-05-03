@@ -52,10 +52,14 @@ def busca_fuzzy(palavra_chave, texto, precisao=0.8):
     return f"{VERMELHO}Nenhuma correspondência semelhante encontrada.{RESET}"
 
 # Funcionalidade 4 - Tabela de Símbolos e Fila de Tokens
-def gerar_tabela_simbolos(tokens):
-    tabela_simbolos = list(set(token for frase in tokens for token in frase))
-    fila_tokens = deque(token for frase in tokens for token in frase)
+def gerar_tabela_simbolos(texto):
+    tokens = re.findall(r'\w+|[^\s\w]', texto, re.UNICODE)
+    tokens_filtrados = [t for t in tokens if t.lower() not in stopwords_pt or not t.isalpha()]
+    tabela_simbolos = list({t for t in tokens_filtrados if t.isalpha()})
+    fila_tokens = deque(tokens_filtrados)
+    
     return tabela_simbolos, fila_tokens
+
 
 # programa principal (para o Usuário)
 def main():
@@ -97,9 +101,8 @@ def main():
                 print(VERMELHO + "Precisão inválida. Tente novamente!" + RESET)
 
         elif escolha == "4":
-            texto = input("\nDigite frases separadas por ponto final: ")
-            frases = [frase.strip().split() for frase in texto.split('.') if frase]
-            tabela, fila = gerar_tabela_simbolos(frases)
+            texto = input("\nDigite o texto: ")
+            tabela, fila = gerar_tabela_simbolos(texto)
             print(VERDE + "\nTabela de Símbolos:" + RESET, tabela)
             print(VERDE + "Fila de Tokens:" + RESET, list(fila))
 
